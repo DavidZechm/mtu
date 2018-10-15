@@ -24,8 +24,8 @@ class MainWidget(BoxLayout):
         self.init = 0
 
     def beep(self):
-        self.exam_dur = 100
-        if self.number >= self.exam_dur:
+        self.exam_dur = 5
+        if self.number >= self.exam_dur+1:
             if self.init == 0:
                 for _ in range(3):
                     playsound("data/beep.mp3")
@@ -36,8 +36,8 @@ class MainWidget(BoxLayout):
         self.number += .1
 
         sec = timedelta(seconds=int((self.number)))
-        time = datetime(1, 1, 1) + sec
-        self.timestr = time.strftime("%M:%S")
+        #time = datetime(1, 1, 1) + sec
+        self.timestr = str(sec)
 
         self.beep()
 
