@@ -6,21 +6,24 @@
             Label:
                 text: root.timestr
                 text_size: self.size
-                font_size: '100dp'
+                font_size: '120dp'
                 halign: 'center'
-                valign: 'middle'
+                valign: 'bottom'
         BoxLayout:
             orientation: 'horizontal'
             Button:
                 text: 'Start'
                 on_press: root.start()
-                font_size: '40dp' 
+                font_size: '40dp'
+                size_hint: [1, .4]
             Button:
                 text: 'Pause'
                 on_press: root.pause()
                 font_size: '40dp'
+                size_hint: [1, .4]
             Button:
                 text: 'Stop'
                 on_press: root.stop()
                 on_press: root.number = 0
                 font_size: '40dp'
+                size_hint: [1, .4]

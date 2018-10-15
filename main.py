@@ -25,7 +25,7 @@ class MainWidget(BoxLayout):
 
     # Piepton nach eingestellter Zeit
     def beep(self):
-        self.exam_dur = 25  # Prüfungsdauer
+        self.exam_dur = 25  # Pruefungsdauer
         if self.number >= self.exam_dur+1:
             if self.init == 0:
                 for _ in range(3):
