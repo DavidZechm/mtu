@@ -1,25 +1,26 @@
 <MainWidget>:
     BoxLayout:
         orientation: 'vertical'
-        Label:
-            text: root.timestr
-            text_size: self.size
-            font_size: '100dp'
-            halign: 'center'
-            valign: 'middle'
-    GridLayout:
-        cols: 3
-        orientation: 'vertical'
-        Button:
-            text: 'Start'
-            on_press: root.start()
-            font_size: '40dp' 
-        Button:
-            text: 'Pause'
-            on_press: root.stop()
-            font_size: '40dp'
-        Button:
-            text: 'Stop'
-            on_press: root.stop()
-            on_press: root.number = 0
-            font_size: '40dp'
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: root.timestr
+                text_size: self.size
+                font_size: '100dp'
+                halign: 'center'
+                valign: 'middle'
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                text: 'Start'
+                on_press: root.start()
+                font_size: '40dp' 
+            Button:
+                text: 'Pause'
+                on_press: root.pause()
+                font_size: '40dp'
+            Button:
+                text: 'Stop'
+                on_press: root.stop()
+                on_press: root.number = 0
+                font_size: '40dp'

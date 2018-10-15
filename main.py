@@ -23,8 +23,9 @@ class MainWidget(BoxLayout):
         self.number = 0
         self.init = 0
 
+    # Piepton nach eingestellter Zeit
     def beep(self):
-        self.exam_dur = 5
+        self.exam_dur = 25  # Prüfungsdauer
         if self.number >= self.exam_dur+1:
             if self.init == 0:
                 for _ in range(3):
@@ -32,21 +33,32 @@ class MainWidget(BoxLayout):
 
                 self.init = 1
 
+    # Timer
     def increment_time(self, interval):
         self.number += .1
 
-        sec = timedelta(seconds=int((self.number)))
-        #time = datetime(1, 1, 1) + sec
-        self.timestr = str(sec)
+        s = self.number
+        hours, remainder = divmod(s, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        self.timestr = '{:02}:{:02}'.format(
+            int(minutes), int(seconds))
 
         self.beep()
 
+    # Start
     def start(self):
         Clock.unschedule(self.increment_time)
         Clock.schedule_interval(self.increment_time, .1)
 
+    # Pause
+    def pause(self):
+        Clock.unschedule(self.increment_time)
+        self.init = 0
+
+    # Stop - Nullsetzen
     def stop(self):
         Clock.unschedule(self.increment_time)
+        self.timestr = "00:00"
         self.init = 0
 
 
