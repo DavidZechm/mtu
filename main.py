@@ -1,11 +1,19 @@
+#!/usr/bin/env python3
+
+from kivy.uix.checkbox import CheckBox
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.properties import NumericProperty
 from kivy.properties import StringProperty
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 from playsound import playsound
 from datetime import datetime, timedelta
+from kivy.uix.popup import Popup
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.slider import Slider
 
 Builder.load_file("main.kv")
 
@@ -22,6 +30,11 @@ class MainWidget(BoxLayout):
         self.beep()
         self.number = 0
         self.init = 0
+
+        self.time_slider = Slider(min=10, max=15, value=10, step=1,
+                                  value_track=True, value_track_color=[1, 0, 0, 1])
+
+        self.slider_value = Label(text=str(self.time_slider.value))
 
     # Piepton nach eingestellter Zeit
     def beep(self):
@@ -60,6 +73,24 @@ class MainWidget(BoxLayout):
         Clock.unschedule(self.increment_time)
         self.timestr = "00:00"
         self.init = 0
+
+    def slider_chng(self, instance, value):
+        self.slider_value.text = str(instance.value)
+
+    def settings(self):
+        layout = GridLayout(cols=3, orientation="vertical")
+        time_lbl = Label(text="Pruefungsdauer", font_size="25dp")
+        self.time_slider.bind(value=self.slider_chng)
+
+        layout.add_widget(time_lbl)
+        layout.add_widget(self.time_slider)
+        layout.add_widget(self.slider_value)
+
+        popup = Popup(title='Einstellungen',
+                      content=layout,
+                      size_hint=(None, None), size=(400, 400))
+
+        popup.open()
 
 
 class ExampleApp(App):
