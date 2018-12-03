@@ -3,6 +3,7 @@
 from kivy.uix.checkbox import CheckBox
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.core.window import Window
 from kivy.properties import NumericProperty
 from kivy.properties import StringProperty
 from kivy.uix.gridlayout import GridLayout
@@ -14,13 +15,35 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.slider import Slider
+from demo_opts import get_device
+from luma.core.render import canvas
+from luma.core.interface.serial import i2c
+from luma.oled.device import ssd1306
+from PIL import ImageFont, ImageDraw
 
 Builder.load_file("main.kv")
+
+win_x = 800
+win_y = 480
+Window.size = (win_x, win_y)
+Window.fullscreen = True
+#from kivy.config import Config
+#Config.set('graphics', 'width', '800')
+#Config.set('graphics', 'height', '480')
+
+#oled
+serial = i2c(port=1, address=0x3D)
+device = ssd1306(serial)
+padding = 2
+shape_width = 20
+top = padding
+bottom = device.height - padding - 1
 
 
 class MainWidget(BoxLayout):
     number = NumericProperty()
     timestr = StringProperty()
+
 
     def __init__(self, **kwargs):
         super(MainWidget, self).__init__(**kwargs)
@@ -36,6 +59,7 @@ class MainWidget(BoxLayout):
 
         self.slider_value = Label(text=str(self.time_slider.value))
 
+
     # Piepton nach eingestellter Zeit
     def beep(self):
         self.exam_dur = 25  # Pruefungsdauer
@@ -45,6 +69,13 @@ class MainWidget(BoxLayout):
                     playsound("data/beep.mp3")
 
                 self.init = 1
+
+    def update_oled(self):
+        with canvas(device) as draw:
+            #draw.text((0, 0), self.timestr, fill="white")
+            font = ImageFont.truetype('./fonts/Volter__28Goldfish_29.ttf',44)
+            draw.text((0,(64-44)/2), self.timestr, fill="white", font=font, anchor="center")
+
 
     # Timer
     def increment_time(self, interval):
@@ -56,6 +87,7 @@ class MainWidget(BoxLayout):
         self.timestr = '{:02}:{:02}'.format(
             int(minutes), int(seconds))
 
+        self.update_oled()
         self.beep()
 
     # Start
@@ -72,6 +104,7 @@ class MainWidget(BoxLayout):
     def stop(self):
         Clock.unschedule(self.increment_time)
         self.timestr = "00:00"
+        self.update_oled()
         self.init = 0
 
     def slider_chng(self, instance, value):
