@@ -26,7 +26,7 @@ Builder.load_file("main.kv")
 win_x = 800
 win_y = 480
 Window.size = (win_x, win_y)
-Window.fullscreen = False
+Window.fullscreen = True
 #from kivy.config import Config
 #Config.set('graphics', 'width', '800')
 #Config.set('graphics', 'height', '480')
