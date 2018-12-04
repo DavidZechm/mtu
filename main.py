@@ -22,6 +22,7 @@ class MainWidget(BoxLayout):
     number = NumericProperty()
     timestr = StringProperty()
 
+    #init
     def __init__(self, **kwargs):
         super(MainWidget, self).__init__(**kwargs)
         Clock.schedule_interval(self.increment_time, .1)
@@ -32,13 +33,14 @@ class MainWidget(BoxLayout):
         self.init = 0
 
         self.time_slider = Slider(min=10, max=15, value=10, step=1,
-                                  value_track=True, value_track_color=[1, 0, 0, 1])
+                                  value_track=True, value_track_color=[1, 0, 0, 1], size_hint=[1, 0.5])
 
-        self.slider_value = Label(text=str(self.time_slider.value))
+        self.slider_value = Label(
+            text=str(self.time_slider.value), font_size="20dp", size_hint=[1, 0.5])
 
     # Piepton nach eingestellter Zeit
     def beep(self):
-        self.exam_dur = 25  # Pruefungsdauer
+        self.exam_dur = 15  # Pruefungsdauer
         if self.number >= self.exam_dur+1:
             if self.init == 0:
                 for _ in range(3):
@@ -74,15 +76,20 @@ class MainWidget(BoxLayout):
         self.timestr = "00:00"
         self.init = 0
 
+    # slider value
     def slider_chng(self, instance, value):
         self.slider_value.text = str(instance.value)
 
+    # settings
     def settings(self):
-        layout = GridLayout(cols=3, orientation="vertical")
-        time_lbl = Label(text="Pruefungsdauer", font_size="25dp")
+        layout = GridLayout(cols=2, orientation="horizontal")
+        time_lbl = Label(
+            text="Piepton:", font_size="25dp", size_hint=[1, 1])
         self.time_slider.bind(value=self.slider_chng)
+        beep_chk = CheckBox()
 
         layout.add_widget(time_lbl)
+        layout.add_widget(beep_chk)
         layout.add_widget(self.time_slider)
         layout.add_widget(self.slider_value)
 
