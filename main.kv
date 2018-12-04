@@ -6,7 +6,7 @@
             Label:
                 text: root.timestr
                 text_size: self.size
-                font_size: '120dp'
+                font_size: '150dp'
                 halign: 'center'
                 valign: 'bottom'
         BoxLayout:
@@ -16,19 +16,23 @@
                 on_press: root.start()
                 font_size: '40dp'
                 size_hint: [1, .4]
+                background_color: 1, 1, 1, 0.5
             Button:
                 text: 'Pause'
                 on_press: root.pause()
                 font_size: '40dp'
                 size_hint: [1, .4]
+                background_color: 1, 1, 1, 0.5
             Button:
                 text: 'Stop'
                 on_press: root.stop()
                 on_press: root.number = 0
                 font_size: '40dp'
                 size_hint: [1, .4]
+                background_color: 1, 1, 1, 0.5
             Button:
                 text: 'Settings'
                 on_press: root.settings()
                 font_size: '40dp'
                 size_hint: [1, .4]
+                background_color: 1, 1, 1, 0.5

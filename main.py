@@ -3,6 +3,7 @@
 from kivy.uix.checkbox import CheckBox
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.core.window import Window
 from kivy.properties import NumericProperty
 from kivy.properties import StringProperty
 from kivy.uix.gridlayout import GridLayout
@@ -14,8 +15,29 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.slider import Slider
+from demo_opts import get_device
+from luma.core.render import canvas
+from luma.core.interface.serial import i2c
+from luma.oled.device import ssd1306
+from PIL import ImageFont, ImageDraw
 
 Builder.load_file("main.kv")
+
+win_x = 800
+win_y = 480
+Window.size = (win_x, win_y)
+Window.fullscreen = False
+#from kivy.config import Config
+#Config.set('graphics', 'width', '800')
+#Config.set('graphics', 'height', '480')
+
+#oled
+serial = i2c(port=1, address=0x3D)
+device = ssd1306(serial)
+padding = 2
+shape_width = 20
+top = padding
+bottom = device.height - padding - 1
 
 
 class MainWidget(BoxLayout):
@@ -48,6 +70,13 @@ class MainWidget(BoxLayout):
 
                 self.init = 1
 
+    def update_oled(self):
+        with canvas(device) as draw:
+            #draw.text((0, 0), self.timestr, fill="white")
+            font = ImageFont.truetype('./fonts/Volter__28Goldfish_29.ttf', 44)
+            draw.text((0, (64-44)/2), self.timestr,
+                      fill="white", font=font, anchor="center")
+
     # Timer
     def increment_time(self, interval):
         self.number += .1
@@ -58,6 +87,7 @@ class MainWidget(BoxLayout):
         self.timestr = '{:02}:{:02}'.format(
             int(minutes), int(seconds))
 
+        self.update_oled()
         self.beep()
 
     # Start
@@ -74,6 +104,7 @@ class MainWidget(BoxLayout):
     def stop(self):
         Clock.unschedule(self.increment_time)
         self.timestr = "00:00"
+        self.update_oled()
         self.init = 0
 
     # slider value
@@ -87,17 +118,26 @@ class MainWidget(BoxLayout):
             text="Piepton:", font_size="25dp", size_hint=[1, 1])
         self.time_slider.bind(value=self.slider_chng)
         beep_chk = CheckBox()
+        popup = Popup(title='Einstellungen',
+                      content=layout,
+                      size_hint=(None, None), size=(400, 400),
+                      auto_dismiss=False)
 
+        popup.open()
+
+        def callback(self):
+            #popup.dismiss
+            self.clear_widgets()
+            print "EXIT"
+
+        closePopup = Button(text="Close")
+        closePopup.bind(on_press=callback)
+
+        layout.add_widget(closePopup)
         layout.add_widget(time_lbl)
         layout.add_widget(beep_chk)
         layout.add_widget(self.time_slider)
         layout.add_widget(self.slider_value)
-
-        popup = Popup(title='Einstellungen',
-                      content=layout,
-                      size_hint=(None, None), size=(400, 400))
-
-        popup.open()
 
 
 class ExampleApp(App):
