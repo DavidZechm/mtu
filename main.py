@@ -27,6 +27,8 @@ Builder.load_file("main.kv")
 
 win_x = 800
 win_y = 480
+beepBool = None
+sliderVal = 10
 Window.size = (win_x, win_y)
 Window.fullscreen = False
 #from kivy.config import Config
@@ -66,7 +68,7 @@ class MainWidget(BoxLayout):
 
     # Piepton nach eingestellter Zeit
     def beep(self):
-        self.exam_dur = 600  # Pruefungsdauer
+        self.exam_dur = sliderVal  # Pruefungsdauer
         if self.number >= self.exam_dur+1:
             if self.init == 0:
                 for _ in range(3):
@@ -119,28 +121,32 @@ class MainWidget(BoxLayout):
     # slider value
     def slider_chng(self, instance, value):
         self.slider_value.text = str(instance.value)
+        sliderVal = instance.value
 
     # settings
     def settings(self):
-        layout = GridLayout(cols=2, orientation="horizontal")
+        layout = GridLayout(cols=3, orientation="horizontal")
         time_lbl = Label(
             text="Piepton:", font_size="25dp", size_hint=[1, 1])
         self.time_slider.bind(value=self.slider_chng)
         beep_chk = CheckBox()
         popup = Popup(title='Einstellungen',
                       content=layout,
-                      size_hint=(None, None), size=(400, 400),
+                      size_hint=(None, None), size=(500, 400),
                       auto_dismiss=False)
 
         popup.open()
 
-        def callback(self):
-            #popup.dismiss
-            self.clear_widgets()
-            print "EXIT"
+        # save settings, basically
+        def closeSettings(self):
+            beepBool = beep_chk.active
+            print sliderVal
+            popup.dismiss()
+            layout.clear_widgets()
+            #print "EXIT"
 
         closePopup = Button(text="Close")
-        closePopup.bind(on_press=callback)
+        closePopup.bind(on_press=closeSettings)
 
         layout.add_widget(closePopup)
         layout.add_widget(time_lbl)
