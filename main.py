@@ -16,12 +16,11 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.slider import Slider
 import time
-"""
 from demo_opts import get_device
 from luma.core.render import canvas
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
-"""
+
 from PIL import ImageFont, ImageDraw
 
 Builder.load_file("main.kv")
