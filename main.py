@@ -34,6 +34,7 @@ startTime = 0
 pauseTime = 0
 lastPause = 0
 duration = 0
+sliderVal = 10
 
 Window.size = (win_x, win_y)
 Window.fullscreen = True
