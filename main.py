@@ -34,7 +34,7 @@ startTime = 0
 pauseTime = 0
 lastPause = 0
 Window.size = (win_x, win_y)
-Window.fullscreen = False
+Window.fullscreen = True
 from kivy.config import Config
 Config.set('graphics', 'width', '800')
 Config.set('graphics', 'height', '480')
@@ -136,6 +136,8 @@ class MainWidget(BoxLayout):
         self.update_oled()
         self.init = 0
         self.started = False
+        global pauseTime
+        pauseTime = 0
 
     # slider value
     def slider_chng(self, instance, value):
