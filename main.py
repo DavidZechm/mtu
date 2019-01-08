@@ -135,6 +135,7 @@ class MainWidget(BoxLayout):
         self.timestr = "00:00"
         self.update_oled()
         self.init = 0
+        self.started = False
 
     # slider value
     def slider_chng(self, instance, value):
