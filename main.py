@@ -15,6 +15,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.slider import Slider
+import time
 """
 from demo_opts import get_device
 from luma.core.render import canvas
@@ -28,7 +29,11 @@ Builder.load_file("main.kv")
 win_x = 800
 win_y = 480
 beepBool = None
-sliderVal = 10
+#global sliderVal 
+sliderVal = 15
+startTime = 0
+pauseTime = 0
+lastPause = 0
 Window.size = (win_x, win_y)
 Window.fullscreen = False
 #from kivy.config import Config
@@ -59,12 +64,21 @@ class MainWidget(BoxLayout):
         self.beep()
         self.number = 0
         self.init = 0
+        self.started = False
+        
 
-        self.time_slider = Slider(min=10, max=15, value=10, step=1,
+        self.time_slider = Slider(min=10, max=15, value=15, step=1,
                                   value_track=True, value_track_color=[1, 0, 0, 1], size_hint=[1, 0.5])
 
         self.slider_value = Label(
             text=str(self.time_slider.value), font_size="20dp", size_hint=[1, 0.5])
+
+    def setSliderVal(self, val):
+        self.sliderVal = val
+    
+    #def getSliderVal(self):
+     #   return self.time_slider.value
+
 
     # Piepton nach eingestellter Zeit
     def beep(self):
@@ -88,8 +102,10 @@ class MainWidget(BoxLayout):
     # Timer
     def increment_time(self, interval):
         self.number += .1
-
-        s = self.number
+        global startTime, pauseTime
+        duration = time.time() - startTime + pauseTime
+        #s = self.number
+        s = int(duration)
         hours, remainder = divmod(s, 3600)
         minutes, seconds = divmod(remainder, 60)
         self.timestr = '{:02}:{:02}'.format(
@@ -99,14 +115,27 @@ class MainWidget(BoxLayout):
         """
         self.beep()
 
+
     # Start
     def start(self):
+        if not self.started:
+            global startTime
+            startTime = time.time()
+            self.started = True
+        else:
+            global pauseTime, lastPause
+            pauseTime = pauseTime + (lastPause - time.time())
+            print (pauseTime)
+
+
         Clock.unschedule(self.increment_time)
         Clock.schedule_interval(self.increment_time, .1)
 
     # Pause
     def pause(self):
         Clock.unschedule(self.increment_time)
+        global lastPause
+        lastPause = time.time()
         self.init = 0
 
     # Stop - Nullsetzen
@@ -121,7 +150,9 @@ class MainWidget(BoxLayout):
     # slider value
     def slider_chng(self, instance, value):
         self.slider_value.text = str(instance.value)
+        global sliderVal
         sliderVal = instance.value
+
 
     # settings
     def settings(self):
@@ -138,9 +169,8 @@ class MainWidget(BoxLayout):
         popup.open()
 
         # save settings, basically
-        def closeSettings(self):
+        def closeSettings(self):           
             beepBool = beep_chk.active
-            print sliderVal
             popup.dismiss()
             layout.clear_widgets()
             #print "EXIT"
