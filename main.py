@@ -28,11 +28,13 @@ Builder.load_file("main.kv")
 win_x = 800
 win_y = 480
 beepBool = None
-#global sliderVal 
-sliderVal = 10
+
+#global Variables
 startTime = 0
 pauseTime = 0
 lastPause = 0
+duration = 0
+
 Window.size = (win_x, win_y)
 Window.fullscreen = True
 from kivy.config import Config
@@ -88,12 +90,15 @@ class MainWidget(BoxLayout):
             font = ImageFont.truetype('./fonts/arial.ttf', 50)
             draw.text((0, (64-50)/2), self.timestr,
                       fill="white", font=font, anchor="center")
+            global duration
+            lenght = (128*15*60)/duration
+            draw.rectangle((64, 64-10, 64, lenght), outline="white", fill="white")
 
 
     # Timer
     def increment_time(self, interval):
         self.number += .1
-        global startTime, pauseTime
+        global startTime, pauseTime, duration
         duration = time.time() - startTime + pauseTime
         #s = self.number
         s = int(duration)
