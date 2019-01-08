@@ -85,8 +85,8 @@ class MainWidget(BoxLayout):
     def update_oled(self):
         with canvas(device) as draw:
             #draw.text((0, 0), self.timestr, fill="white")
-            font = ImageFont.truetype('./fonts/Volter__28Goldfish_29.ttf', 44)
-            draw.text((0, (64-44)/2), self.timestr,
+            font = ImageFont.truetype('./fonts/arial.ttf', 50)
+            draw.text((0, (64-50)/2), self.timestr,
                       fill="white", font=font, anchor="center")
 
 
