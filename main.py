@@ -138,13 +138,13 @@ class MainWidget(BoxLayout):
         global pauseTime
         pauseTime = 0
 
-"""
+    """
     # slider value
     def slider_chng(self, instance, value):
         self.slider_value.text = str(instance.value)
         global sliderVal
         sliderVal = instance.value
-"""
+    """
     """
     # settings
     def settings(self):
@@ -175,7 +175,7 @@ class MainWidget(BoxLayout):
         layout.add_widget(beep_chk)
         layout.add_widget(self.time_slider)
         layout.add_widget(self.slider_value)
-"""
+    """
 
 class ExampleApp(App):
     def build(self):
