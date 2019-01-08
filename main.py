@@ -93,7 +93,7 @@ class MainWidget(BoxLayout):
                       fill="white", font=font, anchor="center")
             global duration
             lenght = (128*15*60)/duration
-            draw.rectangle((64, 64-10, 64, lenght), outline="white", fill="white")
+            draw.rectangle((64-10, 64, 64-10, lenght), outline="white", fill="white")
 
 
     # Timer
