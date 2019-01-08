@@ -89,11 +89,12 @@ class MainWidget(BoxLayout):
         with canvas(device) as draw:
             #draw.text((0, 0), self.timestr, fill="white")
             font = ImageFont.truetype('./fonts/arial.ttf', 50)
-            draw.text((0, (64-50)/2), self.timestr,
+            draw.text((0, 0), self.timestr,
                       fill="white", font=font, anchor="center")
             global duration
-            lenght = (128*15*60)/duration
-            draw.rectangle((64-10, 64, 64-10, lenght), outline="white", fill="white")
+            lenght = 128*(duration/(15*60))
+            height = 10
+            draw.rectangle((0, 64, lenght, 64-height), outline="white", fill="white")
 
 
     # Timer
