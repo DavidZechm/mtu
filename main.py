@@ -29,7 +29,7 @@ win_x = 800
 win_y = 480
 beepBool = None
 #global sliderVal 
-sliderVal = 15
+sliderVal = 10
 startTime = 0
 pauseTime = 0
 lastPause = 0
@@ -64,12 +64,11 @@ class MainWidget(BoxLayout):
         self.init = 0
         self.started = False
         
-
+        """
         self.time_slider = Slider(min=10, max=15, value=15, step=1,
                                   value_track=True, value_track_color=[1, 0, 0, 1], size_hint=[1, 0.5])
-
         self.slider_value = Label(
-            text=str(self.time_slider.value), font_size="20dp", size_hint=[1, 0.5])
+            text=str(self.time_slider.value), font_size="20dp", size_hint=[1, 0.5])"""
 
 
     # Piepton nach eingestellter Zeit
@@ -77,7 +76,7 @@ class MainWidget(BoxLayout):
         self.exam_dur = sliderVal  # Pruefungsdauer
         if self.number >= self.exam_dur+1:
             if self.init == 0:
-                for _ in range(3):
+                for _ in range(2):
                     playsound("data/beep.mp3")
 
                 self.init = 1
@@ -116,7 +115,7 @@ class MainWidget(BoxLayout):
         else:
             global pauseTime, lastPause
             pauseTime = pauseTime + (lastPause - time.time())
-            print (pauseTime)
+            #print (pauseTime)
 
 
         Clock.unschedule(self.increment_time)
@@ -139,13 +138,14 @@ class MainWidget(BoxLayout):
         global pauseTime
         pauseTime = 0
 
+"""
     # slider value
     def slider_chng(self, instance, value):
         self.slider_value.text = str(instance.value)
         global sliderVal
         sliderVal = instance.value
-
-
+"""
+    """
     # settings
     def settings(self):
         layout = GridLayout(cols=3, orientation="horizontal")
@@ -175,7 +175,7 @@ class MainWidget(BoxLayout):
         layout.add_widget(beep_chk)
         layout.add_widget(self.time_slider)
         layout.add_widget(self.slider_value)
-
+"""
 
 class ExampleApp(App):
     def build(self):
