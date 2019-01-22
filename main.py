@@ -71,7 +71,6 @@ class MainWidget(BoxLayout):
         Clock.schedule_interval(self.increment_time, .1)
         self.increment_time(0)
         self.stop()
-        self.beep()
         self.number = 0
         self.init = 0
         self.started = False
@@ -90,6 +89,7 @@ class MainWidget(BoxLayout):
             if not buzzed:
                 for _ in range(2):
                     # playsound("data/beep.mp3")
+                    print("beep")
                     GPIO.output(buzzerPin,GPIO.HIGH)
                     time.sleep(0.5)
                     GPIO.output(buzzerPin,GPIO.LOW)
