@@ -36,7 +36,7 @@ startTime = 0
 pauseTime = 0
 lastPause = 0
 duration = 0
-examDuration = 10
+examDuration = 10 * 60
 buzzerPin = 21
 
 Window.size = (win_x, win_y)
@@ -84,7 +84,8 @@ class MainWidget(BoxLayout):
     # Piepton nach eingestellter Zeit
     def beep(self):
         self.exam_dur = examDuration  # Pruefungsdauer
-        if self.number >= self.exam_dur+1:
+        global duration
+        if duration >= self.exam_dur:
             if self.init == 0:
                 for _ in range(2):
                     # playsound("data/beep.mp3")
