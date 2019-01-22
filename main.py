@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+raspberry = True
+
 import time
 from datetime import datetime, timedelta
 
@@ -18,12 +20,13 @@ from kivy.uix.popup import Popup
 from kivy.uix.slider import Slider
 from PIL import ImageDraw, ImageFont
 
-import RPi.GPIO as GPIO
-from demo_opts import get_device
-from luma.core.interface.serial import i2c
-from luma.core.render import canvas
-from luma.oled.device import ssd1306
-from playsound import playsound
+if raspberry:
+    import RPi.GPIO as GPIO
+    from demo_opts import get_device
+    from luma.core.interface.serial import i2c
+    from luma.core.render import canvas
+    from luma.oled.device import ssd1306
+    from playsound import playsound
 
 Builder.load_file("main.kv")
 
@@ -32,7 +35,7 @@ win_y = 480
 beepBool = None
 
 #global Variables
-startTime = 0
+startTime = time.time()
 pauseTime = 0
 lastPause = 0
 duration = 0
@@ -42,23 +45,23 @@ buzzerPin = 21
 buzzed = False
 
 Window.size = (win_x, win_y)
-Window.fullscreen = True
+Window.fullscreen = raspberry
 Config.set('graphics', 'width', '800')
 Config.set('graphics', 'height', '480')
 
-#oled
+# OLED
+if raspberry:
+    serial = i2c(port=1, address=0x3D)
+    device = ssd1306(serial)
+    padding = 2
+    shape_width = 20
+    top = padding
+    bottom = device.height - padding - 1
 
-serial = i2c(port=1, address=0x3D)
-device = ssd1306(serial)
-padding = 2
-shape_width = 20
-top = padding
-bottom = device.height - padding - 1
-
-# GPIO
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-GPIO.setup(buzzerPin,GPIO.OUT)
+    # GPIO
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
+    GPIO.setup(buzzerPin,GPIO.OUT)
 
 
 class MainWidget(BoxLayout):
@@ -90,23 +93,25 @@ class MainWidget(BoxLayout):
                 for _ in range(2):
                     # playsound("data/beep.mp3")
                     print("beep")
-                    GPIO.output(buzzerPin,GPIO.HIGH)
-                    time.sleep(0.5)
-                    GPIO.output(buzzerPin,GPIO.LOW)
-                    time.sleep(0.5)
+                    if raspberry:
+                        GPIO.output(buzzerPin,GPIO.HIGH)
+                        time.sleep(0.5)
+                        GPIO.output(buzzerPin,GPIO.LOW)
+                        time.sleep(0.5)
                 buzzed = True
 
 
     def update_oled(self):
-        with canvas(device) as draw:
-            #draw.text((0, 0), self.timestr, fill="white")
-            font = ImageFont.truetype('./fonts/arial.ttf', 50)
-            draw.text((0, 0), self.timestr,
-                      fill="white", font=font, anchor="center")
-            global duration, examDuration
-            lenght = 128*(duration/(examDuration))
-            height = 10
-            draw.rectangle((0, 64, lenght, 64-height), outline="white", fill="white")
+        if raspberry:
+            with canvas(device) as draw:
+                #draw.text((0, 0), self.timestr, fill="white")
+                font = ImageFont.truetype('./fonts/arial.ttf', 50)
+                draw.text((0, 0), self.timestr,
+                        fill="white", font=font, anchor="center")
+                global duration, examDuration
+                lenght = 128*(duration/(examDuration))
+                height = 10
+                draw.rectangle((0, 64, lenght, 64-height), outline="white", fill="white")
 
 
     # Timer
@@ -114,12 +119,12 @@ class MainWidget(BoxLayout):
         self.number += .1
         global startTime, pauseTime, duration
         duration = time.time() - startTime + pauseTime
-        #s = self.number
         s = int(duration)
         hours, remainder = divmod(s, 3600)
         minutes, seconds = divmod(remainder, 60)
         self.timestr = '{:02}:{:02}'.format(
             int(minutes), int(seconds))
+
 
         self.update_oled()
         self.beep()
