@@ -36,8 +36,10 @@ startTime = 0
 pauseTime = 0
 lastPause = 0
 duration = 0
-examDuration = 10 * 60
+examDuration = 15 * 60
+buzzTime = 10 * 60
 buzzerPin = 21
+buzzed = False
 
 Window.size = (win_x, win_y)
 Window.fullscreen = True
@@ -83,18 +85,16 @@ class MainWidget(BoxLayout):
 
     # Piepton nach eingestellter Zeit
     def beep(self):
-        self.exam_dur = examDuration  # Pruefungsdauer
-        global duration
-        if duration >= self.exam_dur:
-            if self.init == 0:
+        global duration, buzzTime, buzzed
+        if duration >= buzzTime:
+            if not buzzed:
                 for _ in range(2):
                     # playsound("data/beep.mp3")
                     GPIO.output(buzzerPin,GPIO.HIGH)
                     time.sleep(0.5)
                     GPIO.output(buzzerPin,GPIO.LOW)
                     time.sleep(0.5)
-
-                self.init = 1
+                buzzed = True
 
 
     def update_oled(self):
@@ -103,8 +103,8 @@ class MainWidget(BoxLayout):
             font = ImageFont.truetype('./fonts/arial.ttf', 50)
             draw.text((0, 0), self.timestr,
                       fill="white", font=font, anchor="center")
-            global duration
-            lenght = 128*(duration/(15*60))
+            global duration, examDuration
+            lenght = 128*(duration/(examDuration))
             height = 10
             draw.rectangle((0, 64, lenght, 64-height), outline="white", fill="white")
 
