@@ -37,7 +37,7 @@ pauseTime = 0
 lastPause = 0
 duration = 0
 examDuration = 10
-buzzerPin = 18
+buzzerPin = 21
 
 Window.size = (win_x, win_y)
 Window.fullscreen = True
@@ -56,7 +56,7 @@ bottom = device.height - padding - 1
 # GPIO
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
-GPIO.setup(18,GPIO.OUT)
+GPIO.setup(buzzerPin,GPIO.OUT)
 
 
 class MainWidget(BoxLayout):
