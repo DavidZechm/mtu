@@ -32,7 +32,6 @@ Builder.load_file("main.kv")
 
 win_x = 800
 win_y = 480
-beepBool = None
 
 #global Variables
 startTime = time.time()
@@ -137,9 +136,9 @@ class MainWidget(BoxLayout):
             startTime = time.time()
             self.started = True
         else:
-            global pauseTime, lastPause
+            """global pauseTime, lastPause
             pauseTime = pauseTime + (lastPause - time.time())
-            #print (pauseTime)
+            #print (pauseTime)"""
 
 
         Clock.unschedule(self.increment_time)
