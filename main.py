@@ -42,6 +42,7 @@ examDuration = 15 * 60
 buzzTime = 10 * 60
 buzzerPin = 21
 buzzed = False
+paused = False
 
 Window.size = (win_x, win_y)
 Window.fullscreen = raspberry
@@ -131,14 +132,15 @@ class MainWidget(BoxLayout):
 
     # Start
     def start(self):
+        global paused
         if not self.started:
             global startTime
             startTime = time.time()
             self.started = True
-        else:
-            """global pauseTime, lastPause
+        if paused:
+            global pauseTime, lastPause
             pauseTime = pauseTime + (lastPause - time.time())
-            #print (pauseTime)"""
+            paused = False
 
 
         Clock.unschedule(self.increment_time)
@@ -146,10 +148,12 @@ class MainWidget(BoxLayout):
 
     # Pause
     def pause(self):
-        Clock.unschedule(self.increment_time)
-        global lastPause
-        lastPause = time.time()
-        self.init = 0
+        global lastPause, paused
+        if not paused:
+            Clock.unschedule(self.increment_time)
+            lastPause = time.time()
+            paused = True
+            self.init = 0
 
     # Stop - Nullsetzen
     def stop(self):
@@ -158,8 +162,9 @@ class MainWidget(BoxLayout):
         self.update_oled()
         self.init = 0
         self.started = False
-        global pauseTime
+        global pauseTime, paused
         pauseTime = 0
+        paused = False
 
     """
     # slider value
