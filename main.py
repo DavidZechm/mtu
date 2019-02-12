@@ -75,15 +75,8 @@ class MainWidget(BoxLayout):
         self.increment_time(0)
         self.stop()
         self.number = 0
-        self.init = 0
         self.started = False
         
-        """
-        self.time_slider = Slider(min=10, max=15, value=15, step=1,
-                                  value_track=True, value_track_color=[1, 0, 0, 1], size_hint=[1, 0.5])
-        self.slider_value = Label(
-            text=str(self.time_slider.value), font_size="20dp", size_hint=[1, 0.5])"""
-
 
     # Piepton nach eingestellter Zeit
     def beep(self):
@@ -153,57 +146,19 @@ class MainWidget(BoxLayout):
             Clock.unschedule(self.increment_time)
             lastPause = time.time()
             paused = True
-            self.init = 0
 
     # Stop - Nullsetzen
     def stop(self):
         Clock.unschedule(self.increment_time)
         self.timestr = "00:00"
+
         self.update_oled()
-        self.init = 0
         self.started = False
-        global pauseTime, paused
+        global pauseTime, paused, buzzed
+        buzzed = False
         pauseTime = 0
         paused = False
 
-    """
-    # slider value
-    def slider_chng(self, instance, value):
-        self.slider_value.text = str(instance.value)
-        global examDuration
-        examDuration = instance.value
-    """
-    """
-    # settings
-    def settings(self):
-        layout = GridLayout(cols=3, orientation="horizontal")
-        time_lbl = Label(
-            text="Piepton:", font_size="25dp", size_hint=[1, 1])
-        self.time_slider.bind(value=self.slider_chng)
-        beep_chk = CheckBox()
-        popup = Popup(title='Einstellungen',
-                      content=layout,
-                      size_hint=(None, None), size=(500, 400),
-                      auto_dismiss=False)
-
-        popup.open()
-
-        # save settings, basically
-        def closeSettings(self):           
-            beepBool = beep_chk.active
-            popup.dismiss()
-            layout.clear_widgets()
-            #print "EXIT"
-
-        closePopup = Button(text="Close")
-        closePopup.bind(on_press=closeSettings)
-
-        layout.add_widget(closePopup)
-        layout.add_widget(time_lbl)
-        layout.add_widget(beep_chk)
-        layout.add_widget(self.time_slider)
-        layout.add_widget(self.slider_value)
-    """
 
 class ExampleApp(App):
     def build(self):
