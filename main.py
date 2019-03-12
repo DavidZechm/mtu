@@ -35,22 +35,20 @@ Window.fullscreen = False
 #Config.set('graphics', 'width', '800')
 #Config.set('graphics', 'height', '480')
 
-#oled
-"""
+# oled
 serial = i2c(port=1, address=0x3D)
 device = ssd1306(serial)
 padding = 2
 shape_width = 20
 top = padding
 bottom = device.height - padding - 1
-"""
 
 
 class MainWidget(BoxLayout):
     number = NumericProperty()
     timestr = StringProperty()
 
-    #init
+    # init
     def __init__(self, **kwargs):
         super(MainWidget, self).__init__(**kwargs)
         Clock.schedule_interval(self.increment_time, .1)
@@ -76,14 +74,12 @@ class MainWidget(BoxLayout):
 
                 self.init = 1
 
-    """
     def update_oled(self):
         with canvas(device) as draw:
             #draw.text((0, 0), self.timestr, fill="white")
             font = ImageFont.truetype('./fonts/Volter__28Goldfish_29.ttf', 44)
             draw.text((0, (64-44)/2), self.timestr,
                       fill="white", font=font, anchor="center")
-    """
 
     # Timer
     def increment_time(self, interval):
@@ -94,9 +90,7 @@ class MainWidget(BoxLayout):
         minutes, seconds = divmod(remainder, 60)
         self.timestr = '{:02}:{:02}'.format(
             int(minutes), int(seconds))
-        """
         self.update_oled()
-        """
         self.beep()
 
     # Start
@@ -143,7 +137,7 @@ class MainWidget(BoxLayout):
             print sliderVal
             popup.dismiss()
             layout.clear_widgets()
-            #print "EXIT"
+            # print "EXIT"
 
         closePopup = Button(text="Close")
         closePopup.bind(on_press=closeSettings)
@@ -158,5 +152,6 @@ class MainWidget(BoxLayout):
 class ExampleApp(App):
     def build(self):
         return MainWidget()
+
 
 ExampleApp().run()
