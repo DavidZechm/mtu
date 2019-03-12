@@ -44,7 +44,6 @@ buzzed = False
 paused = False
 
 Window.size = (win_x, win_y)
-<< << << < HEAD
 Window.fullscreen = False
 #from kivy.config import Config
 #Config.set('graphics', 'width', '800')
@@ -57,7 +56,6 @@ padding = 2
 shape_width = 20
 top = padding
 bottom = device.height - padding - 1
-== == == =
 Window.fullscreen = raspberry
 Config.set('graphics', 'width', '800')
 Config.set('graphics', 'height', '480')
@@ -75,7 +73,6 @@ if raspberry:
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     GPIO.setup(buzzerPin, GPIO.OUT)
->>>>>> > b60d975e3b6fbeafb6fa1127481846f07989ab99
 
 
 class MainWidget(BoxLayout):
