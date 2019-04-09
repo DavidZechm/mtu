@@ -44,7 +44,7 @@ pauseTime = 0
 lastPause = 0
 duration = 0
 examDuration = 15 * 60
-buzzTime = int(examDuration * 0.90)
+buzzTime = int(examDuration * 0.75)
 buzzerPin = 21
 buzzed = False
 paused = False
@@ -208,8 +208,8 @@ class ExampleApp(App):
 
         if key == "time":
             global examDuration, buzzTime
-            examDuration = int(value) * 60
-            buzzTime = int(examDuration * 0.90)
+            examDuration = int(value)
+            buzzTime = int(examDuration * 0.75)
 
     def close_settings(self, settings=None):
         super(ExampleApp, self).close_settings(settings)
