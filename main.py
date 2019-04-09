@@ -15,9 +15,12 @@ from kivy.config import Config
 from kivy.clock import Clock
 from kivy.app import App
 from datetime import datetime, timedelta
+from kivy.config import ConfigParser
 import time
-raspberry = True
 
+raspberry = False
+config = ConfigParser()
+config.read('config.ini')
 
 if raspberry:
     import RPi.GPIO as GPIO
@@ -78,7 +81,9 @@ if raspberry:
 class MainWidget(BoxLayout):
     number = NumericProperty()
     timestr = StringProperty()
-
+    s = Settings()
+    s.add_json_panel('Settings', config, 'settings.json')
+    self.add_widget(s)
     # init
     def __init__(self, **kwargs):
         super(MainWidget, self).__init__(**kwargs)
