@@ -15,8 +15,9 @@ from kivy.config import Config
 from kivy.clock import Clock
 from kivy.app import App
 from datetime import datetime, timedelta
+from kivy.uix.dropdown import DropDown
 import time
-raspberry = True
+raspberry = False
 
 
 if raspberry:
@@ -27,12 +28,13 @@ if raspberry:
     from luma.oled.device import ssd1306
     from playsound import playsound
 
+
 Builder.load_file("main.kv")
 
 win_x = 800
 win_y = 480
 
-#global Variables
+# global Variables
 startTime = time.time()
 pauseTime = 0
 lastPause = 0
@@ -44,21 +46,10 @@ buzzed = False
 paused = False
 
 Window.size = (win_x, win_y)
-Window.fullscreen = False
-#from kivy.config import Config
-#Config.set('graphics', 'width', '800')
-#Config.set('graphics', 'height', '480')
-
-# oled
-serial = i2c(port=1, address=0x3D)
-device = ssd1306(serial)
-padding = 2
-shape_width = 20
-top = padding
-bottom = device.height - padding - 1
 Window.fullscreen = raspberry
 Config.set('graphics', 'width', '800')
 Config.set('graphics', 'height', '480')
+
 
 # OLED
 if raspberry:
@@ -85,11 +76,11 @@ class MainWidget(BoxLayout):
         Clock.schedule_interval(self.increment_time, .1)
         self.increment_time(0)
         self.stop()
+        self.dropDownMenu()
         self.number = 0
         self.started = False
 
     # Piepton nach eingestellter Zeit
-
     def beep(self):
         global duration, buzzTime, buzzed
         if duration >= buzzTime:
@@ -105,11 +96,17 @@ class MainWidget(BoxLayout):
                 buzzed = True
 
     def update_oled(self):
-        with canvas(device) as draw:
-            #draw.text((0, 0), self.timestr, fill="white")
-            font = ImageFont.truetype('./fonts/Volter__28Goldfish_29.ttf', 44)
-            draw.text((0, (64-44)/2), self.timestr,
-                      fill="white", font=font, anchor="center")
+        if raspberry:
+            with canvas(device) as draw:
+                # draw.text((0, 0), self.timestr, fill="white")
+                font = ImageFont.truetype('./fonts/arial.ttf', 50)
+                draw.text((0, 0), self.timestr,
+                          fill="white", font=font, anchor="center")
+                global duration, examDuration
+                lenght = 128*(duration/(examDuration))
+                height = 10
+                draw.rectangle((0, 64, lenght, 64-height),
+                               outline="white", fill="white")
 
     # Timer
     def increment_time(self, interval):
@@ -121,11 +118,11 @@ class MainWidget(BoxLayout):
         minutes, seconds = divmod(remainder, 60)
         self.timestr = '{:02}:{:02}'.format(
             int(minutes), int(seconds))
+
         self.update_oled()
         self.beep()
 
     # Start
-
     def start(self):
         global paused
         if not self.started:
@@ -152,47 +149,29 @@ class MainWidget(BoxLayout):
     def stop(self):
         Clock.unschedule(self.increment_time)
         self.timestr = "00:00"
-
         self.update_oled()
-        """
-        self.init = 0
+        self.started = False
+        global pauseTime, paused, buzzed
+        buzzed = False
+        pauseTime = 0
+        paused = False
 
-    # slider value
-    def slider_chng(self, instance, value):
-        self.slider_value.text = str(instance.value)
-        sliderVal = instance.value
+    def dropDownMenu(self):
+        self.dropMenu = DropDown()
+        tenBtn = Button(text="10")
+        twelveBtn = Button(text="12")
 
-    # settings
-    def settings(self):
-        layout = GridLayout(cols=3, orientation="horizontal")
-        time_lbl = Label(
-            text="Piepton:", font_size="25dp", size_hint=[1, 1])
-        self.time_slider.bind(value=self.slider_chng)
-        beep_chk = CheckBox()
-        popup = Popup(title='Einstellungen',
-                      content=layout,
-                      size_hint=(None, None), size=(500, 400),
-                      auto_dismiss=False)
+        self.dropMenu.add_widget(tenBtn)
+        self.dropMenu.add_widget(twelveBtn)
 
-        popup.open()
+        mainBtn = Button(text="Settings", pos=(0, 0))
+        mainBtn.bind(on_release=self.dropMenu.open)
 
-        # save settings, basically
-        def closeSettings(self):
-            beepBool = beep_chk.active
-            print sliderVal
-            popup.dismiss()
-            layout.clear_widgets()
-            # print "EXIT"
+        self.dropMenu.bind(on_select=lambda instance,
+                           x: setattr(mainBtn, "text", x))
 
-        closePopup = Button(text="Close")
-        closePopup.bind(on_press=closeSettings)
-
-        layout.add_widget(closePopup)
-        layout.add_widget(time_lbl)
-        layout.add_widget(beep_chk)
-        layout.add_widget(self.time_slider)
-        layout.add_widget(self.slider_value)
-        """
+        print("place")
+        self.add_widget(mainBtn)
 
 
 class ExampleApp(App):
