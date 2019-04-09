@@ -20,7 +20,7 @@ from kivy.config import ConfigParser
 import time
 import json
 
-raspberry = False
+raspberry = True
 config = ConfigParser()
 config.read('config.ini')
 
@@ -208,7 +208,7 @@ class ExampleApp(App):
 
         if key == "time":
             global examDuration, buzzTime
-            examDuration = int(value)
+            examDuration = int(value) * 60
             buzzTime = int(examDuration * 0.75)
 
     def close_settings(self, settings=None):
