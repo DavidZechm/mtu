@@ -1,0 +1,9 @@
+[
+    {
+        "type": "numeric",
+        "title": "time",
+        "desc": "Set time.",
+        "section": "config",
+        "lower": "false"
+    }
+]

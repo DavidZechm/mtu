@@ -8,6 +8,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.settings import SettingsWithSpinner
 from kivy.properties import NumericProperty, StringProperty
 from kivy.lang import Builder
 from kivy.core.window import Window
@@ -17,6 +18,7 @@ from kivy.app import App
 from datetime import datetime, timedelta
 from kivy.config import ConfigParser
 import time
+import json
 
 raspberry = False
 config = ConfigParser()
@@ -28,40 +30,54 @@ if raspberry:
     from luma.core.interface.serial import i2c
     from luma.core.render import canvas
     from luma.oled.device import ssd1306
-    from playsound import playsound
+    #from playsound import playsound
+
 
 Builder.load_file("main.kv")
 
 win_x = 800
 win_y = 480
 
-#global Variables
+# global Variables
 startTime = time.time()
 pauseTime = 0
 lastPause = 0
 duration = 0
 examDuration = 15 * 60
-buzzTime = 10 * 60
+buzzTime = int(examDuration * 0.90)
 buzzerPin = 21
 buzzed = False
 paused = False
 
 Window.size = (win_x, win_y)
-Window.fullscreen = False
-#from kivy.config import Config
-#Config.set('graphics', 'width', '800')
-#Config.set('graphics', 'height', '480')
-
-# oled
-serial = i2c(port=1, address=0x3D)
-device = ssd1306(serial)
-padding = 2
-shape_width = 20
-top = padding
-bottom = device.height - padding - 1
 Window.fullscreen = raspberry
 Config.set('graphics', 'width', '800')
 Config.set('graphics', 'height', '480')
+
+
+settings_json = json.dumps([
+    {
+        "type": "title",
+        "title": "WIFI-HotSpot:\nSSID: Maturauhr\nPSK: Maturauhr-123"
+    },
+    {
+        "type": "options",
+        "title": "Zeitdauer",
+        "desc": "Dauer der Pruefung.",
+        "section": "config",
+        "key": "time",
+        "options": ["10", "12", "15"]
+    },
+    {
+        "type": "bool",
+        "title": "Fullscreen",
+        "section": "config",
+        "key": "fullscreen"
+    }
+    
+    ])
+
+
 
 # OLED
 if raspberry:
@@ -79,11 +95,11 @@ if raspberry:
 
 
 class MainWidget(BoxLayout):
+    
     number = NumericProperty()
     timestr = StringProperty()
-    s = Settings()
-    s.add_json_panel('Settings', config, 'settings.json')
-    self.add_widget(s)
+   
+
     # init
     def __init__(self, **kwargs):
         super(MainWidget, self).__init__(**kwargs)
@@ -93,8 +109,8 @@ class MainWidget(BoxLayout):
         self.number = 0
         self.started = False
 
-    # Piepton nach eingestellter Zeit
 
+    # Piepton nach eingestellter Zeit
     def beep(self):
         global duration, buzzTime, buzzed
         if duration >= buzzTime:
@@ -110,11 +126,17 @@ class MainWidget(BoxLayout):
                 buzzed = True
 
     def update_oled(self):
-        with canvas(device) as draw:
-            #draw.text((0, 0), self.timestr, fill="white")
-            font = ImageFont.truetype('./fonts/Volter__28Goldfish_29.ttf', 44)
-            draw.text((0, (64-44)/2), self.timestr,
-                      fill="white", font=font, anchor="center")
+        if raspberry:
+            with canvas(device) as draw:
+                # draw.text((0, 0), self.timestr, fill="white")
+                font = ImageFont.truetype('./fonts/arial.ttf', 50)
+                draw.text((0, 0), self.timestr,
+                          fill="white", font=font, anchor="center")
+                global duration, examDuration
+                lenght = 128*(duration/(examDuration))
+                height = 10
+                draw.rectangle((0, 64, lenght, 64-height),
+                               outline="white", fill="white")
 
     # Timer
     def increment_time(self, interval):
@@ -126,11 +148,11 @@ class MainWidget(BoxLayout):
         minutes, seconds = divmod(remainder, 60)
         self.timestr = '{:02}:{:02}'.format(
             int(minutes), int(seconds))
+
         self.update_oled()
         self.beep()
 
     # Start
-
     def start(self):
         global paused
         if not self.started:
@@ -157,52 +179,42 @@ class MainWidget(BoxLayout):
     def stop(self):
         Clock.unschedule(self.increment_time)
         self.timestr = "00:00"
-
         self.update_oled()
-        """
-        self.init = 0
+        self.started = False
+        global pauseTime, paused, buzzed
+        buzzed = False
+        pauseTime = 0
+        paused = False
 
-    # slider value
-    def slider_chng(self, instance, value):
-        self.slider_value.text = str(instance.value)
-        sliderVal = instance.value
-
-    # settings
-    def settings(self):
-        layout = GridLayout(cols=3, orientation="horizontal")
-        time_lbl = Label(
-            text="Piepton:", font_size="25dp", size_hint=[1, 1])
-        self.time_slider.bind(value=self.slider_chng)
-        beep_chk = CheckBox()
-        popup = Popup(title='Einstellungen',
-                      content=layout,
-                      size_hint=(None, None), size=(500, 400),
-                      auto_dismiss=False)
-
-        popup.open()
-
-        # save settings, basically
-        def closeSettings(self):
-            beepBool = beep_chk.active
-            print sliderVal
-            popup.dismiss()
-            layout.clear_widgets()
-            # print "EXIT"
-
-        closePopup = Button(text="Close")
-        closePopup.bind(on_press=closeSettings)
-
-        layout.add_widget(closePopup)
-        layout.add_widget(time_lbl)
-        layout.add_widget(beep_chk)
-        layout.add_widget(self.time_slider)
-        layout.add_widget(self.slider_value)
-        """
 
 
 class ExampleApp(App):
     def build(self):
+        self.settings_cls = MySettings
         return MainWidget()
 
+    global config
+    
+    def build_settings(self, settings):
+        settings.add_json_panel('Settings', config, data=settings_json)
+
+    def on_config_change(self, config, section, key, value):
+        if key == "fullscreen":
+            print(value)
+            if value == "0":
+                Window.fullscreen = False
+            elif value == "1":
+                Window.fullscreen = True
+
+        if key == "time":
+            global examDuration, buzzTime
+            examDuration = int(value) * 60
+            buzzTime = int(examDuration * 0.90)
+
+    def close_settings(self, settings=None):
+        super(ExampleApp, self).close_settings(settings)
+
+class MySettings(SettingsWithSpinner):
+    pass
 
 ExampleApp().run()
